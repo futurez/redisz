@@ -7,7 +7,7 @@ import (
 )
 
 //set string
-func (r *RedisPool) Set(key, value string) error {
+func (r *RedisPool) Set(key string, value interface{}) error {
 	conn := r.pool.Get()
 	defer conn.Close()
 
@@ -19,17 +19,30 @@ func (r *RedisPool) Set(key, value string) error {
 	return nil
 }
 
-//get string
-func (r *RedisPool) Get(key string) string {
+//get slice
+func (r *RedisPool) Get(key string) ([]byte, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 
-	val, err := redis.String(conn.Do("GET", key))
+	val, err := redis.Bytes(conn.Do("GET", key))
 	if err != nil {
 		logger.Warn("GET ", r.server, " ", r.name, " ", err.Error())
-		return ""
+		return nil, err
 	}
-	return val
+	return val, nil
+}
+
+//get int
+func (r *RedisPool) GetInt64(key string) (int64, error) {
+	conn := r.pool.Get()
+	defer conn.Close()
+
+	val, err := redis.Int64(conn.Do("GET", key))
+	if err != nil {
+		logger.Warn("GET ", r.server, " ", r.name, " ", err.Error())
+		return -1, err
+	}
+	return val, nil
 }
 
 func (r *RedisPool) Incr(key string) int64 {

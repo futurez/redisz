@@ -21,7 +21,7 @@ func TestListCommon(t *testing.T) {
 
 	for _, postsId := range postsIds {
 		key := fmt.Sprintf("post:%d", postsId)
-		post := redisPool.Hgetall(key)
+		post, _ := redisPool.Hgetall(key)
 		t.Log("doc titel = ", post["title"])
 	}
 

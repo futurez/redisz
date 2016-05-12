@@ -89,8 +89,8 @@ func TestHgetAll(t *testing.T) {
 		return
 	}
 
-	valMap := redisPool.Hgetall("carm")
-	if valMap == nil {
+	valMap, err := redisPool.Hgetall("carm")
+	if err != nil {
 		t.Error("HGETALL failed")
 		return
 	}
@@ -140,8 +140,8 @@ func TestCommon(t *testing.T) {
 		return
 	}
 
-	postMap := redisPool.Hgetall(postKey)
-	if postMap == nil {
+	postMap, err := redisPool.Hgetall(postKey)
+	if err != nil {
 		t.Error("hgetall ", postKey, "error")
 		return
 	}

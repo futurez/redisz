@@ -17,7 +17,7 @@ for example:
 			name  -> audi
 			price -> 90W
 */
-func (r *RedisPool) Hset(key, field, value string) error {
+func (r *RedisPool) Hset(key, field string, value interface{}) error {
 	conn := r.pool.Get()
 	defer conn.Close()
 
@@ -78,16 +78,16 @@ func (r *RedisPool) Hmget(key string, fields []string) []string {
 	return vals
 }
 
-func (r *RedisPool) Hgetall(key string) map[string]string {
+func (r *RedisPool) Hgetall(key string) (map[string]string, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 
 	valmap, err := redis.StringMap(conn.Do("HGETALL", key))
 	if err != nil {
 		logger.Warn("HGETALL ", r.server, " ", r.name, " ", err.Error())
-		return nil
+		return nil, err
 	}
-	return valmap
+	return valmap, nil
 }
 
 //HEXISTS if exist return 1

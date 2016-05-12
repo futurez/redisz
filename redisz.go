@@ -58,6 +58,18 @@ func (r *RedisPool) Close() {
 	r.pool.Close()
 }
 
+func (r *RedisPool) Dbsize() int {
+	conn := r.pool.Get()
+	defer conn.Close()
+
+	val, err := redis.Int(conn.Do("DBSIZE"))
+	if err != nil {
+		logger.Warn("DBSIZE ", r.server, " ", r.name, " ", err.Error())
+		return 0
+	}
+	return val
+}
+
 func (r *RedisPool) Del(keys ...string) bool {
 	conn := r.pool.Get()
 	defer conn.Close()
@@ -89,16 +101,16 @@ func (r *RedisPool) Exists(key string) bool {
 }
 
 //set a timeout on key
-func (r *RedisPool) Exprie(key string, time int64) bool {
+func (r *RedisPool) Exprie(key string, time int) error {
 	conn := r.pool.Get()
 	defer conn.Close()
 
-	val, err := redis.Int64(conn.Do("EXPIRE", key, time))
+	_, err := redis.Int64(conn.Do("EXPIRE", key, time))
 	if err != nil {
 		logger.Warn("EXPIRE ", r.server, " ", r.name, " ", err.Error())
-		return false
+		return err
 	}
-	return val == 1
+	return nil
 }
 
 //get all keys
