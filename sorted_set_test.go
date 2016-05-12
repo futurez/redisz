@@ -16,7 +16,7 @@ func TestZadd(t *testing.T) {
 	testMap[4] = "Japan"
 	testMap[5] = "SSS"
 	testMap[6] = "SSSA"
-	ret := redisPool.Zadd(testKey, testMap)
+	ret := redisPool.Zadds(testKey, testMap)
 	if ret < 0 {
 		t.Error("Zadd failed.")
 		return

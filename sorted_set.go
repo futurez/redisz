@@ -6,7 +6,19 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-func (r *RedisPool) Zadd(key string, scoremap map[int]string) int {
+func (r *RedisPool) Zadd(key string, score int, member string) int {
+	conn := r.pool.Get()
+	defer conn.Close()
+
+	val, err := redis.Int(conn.Do("ZADD", key, score, member))
+	if err != nil {
+		logger.Warn("ZADD ", r.server, " ", r.name, " ", err.Error())
+		return -1
+	}
+	return val
+}
+
+func (r *RedisPool) Zadds(key string, scoremap map[int]string) int {
 	conn := r.pool.Get()
 	defer conn.Close()
 
